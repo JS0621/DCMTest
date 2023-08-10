@@ -1,18 +1,27 @@
-﻿//Sebastian Jazmin DIgital CM Software Engineer Coding Test
-//Task: Create a console=based note-taking application using .NET Core
-//Time Start: 8:05 PM
+﻿//Sebastian Jazmin Digital CM Software Engineer Coding Test
 
-using System.ComponentModel.DataAnnotations;
+//Task: Create a console=based note-taking application using .NET Core
+
+//Time Start: 8:05 PM
+//Time Finish: 12:00 AM
+
+//Overview
+/*
+ * When I began, I decided I wanted to have notes save across sessions. Notes note saving accross sessions seems impractical.
+ * I fixed this issue using .txt files.
+ * Uses relative path from the exe in debug. Filepath can be changed to create the "notes" folder where specified.
+ * Note application saves notes as .txts in the notes folder.
+ * Note application can read and delete.
+ */
+
+
 using System.Text;
+String notes_path = "..\\..\\..\\notes"; // Path for notes folder
 
 Console.Write("Note Taking Application:\n\n"); //Intro Message
 
-
-String notes_path = "..\\..\\..\\notes"; // Path for notes folder
-
-bool go = true; //Controls main menu loop
 //Menu Loop
-while (go)
+while (true)
 {
     //Writing main menu to console
     Console.Write("\n1. Create a Note\n2. View All Notes\n3. Delete Note\n4. Exit\n\nInput Selection (1-4):  ");
@@ -30,9 +39,14 @@ while (go)
             Console.WriteLine("Input contents for " + note_name + " note:"); // Prompt for contents
             String? note_text = Console.ReadLine();// Read user input
             File.WriteAllText("..\\..\\..\\notes\\" + note_name + ".txt", note_name + ":\n" + note_text); //Create note file
-            break; //Return to main menu
+            continue; //Return to main menu
 
         case "2": //User wants to read a note
+            if (!Directory.Exists(notes_path))
+            {
+                Console.WriteLine("Notes folder does not exist, please create a note first");
+                break;
+            }
             List<String?>? existing_names = DisplayExistingNotes(); // Display note names and retrieve list of note names
 
             //loop for selecting which note to read
@@ -49,7 +63,7 @@ while (go)
                 //Check if selection is in range
                 if (user_selection < 0 || user_selection > existing_names.Count() - 1)
                 {
-                    Console.WriteLine("Please select a number in range or -1 to exit");
+                    Console.WriteLine("Please select a number in range (or -1 to exit): ");
                 }
                 else
                 {
@@ -62,17 +76,20 @@ while (go)
                         Console.WriteLine(lines[i]);
                     }
                 }
-                break; //Return to main menu
-            }
-
-            break;
-        case "3": //User wants to delete a note
-            if (!Directory.Exists(notes_path)) //If folder does not exist, no notes exist
-            {
-                Console.WriteLine("No saved notes. Please create a note to delete one.");
                 break;
             }
-            while (true)
+
+            continue;//Return to main menu
+        case "3": //User wants to delete a note
+            //If folder does not exist, no notes exist
+            if (!Directory.Exists(notes_path)) 
+            {
+                Console.WriteLine("Notes folder does not exist, please create a note first");
+                break;
+            }
+
+            //Delete loop
+            while (true) 
             {
                 List<String?>? existing_notes = DisplayExistingNotes();// Display note names and create list of note names
 
@@ -90,7 +107,7 @@ while (go)
                 else if (existing_notes.Contains(note_to_delete))
                 {
                     //Try catch as the file may be opened elsewhere
-                    try 
+                    try
                     {
                         File.Delete(notes_path + "\\" + note_to_delete); //Delete the note
                     }
@@ -108,22 +125,21 @@ while (go)
                     Console.WriteLine("Input listed name (or -1 to exit): ");
                 }
             }
-            break;
+            continue;
 
         case "4":
-            go = false;
-            break;
+            break; //exit
         default:
             Console.Write("\nPlease Input a Valid Selection\n");
-            break;
+            continue;
     }
+    break;
 }
-
 Console.Write("Thank you for using this app. Have a wonderful day!");
 
+//Function to turn User Input to an int
 int UserInputToInt()
 {
-    //Turn User Input to an int
     while (true)
     {
         Console.Write("Please input selection (or -1 to exit): ");
@@ -139,10 +155,9 @@ int UserInputToInt()
     }
 }
 
+//Function to get a note name that is not a duplicate or null
 String GetValidNoteName()
 {
-    //Function to get a note name that is not a duplicate or null
-
     String? note_name;
     while (true) //Loop for non null name
     {
@@ -176,9 +191,8 @@ String GetValidNoteName()
 
     return note_name;
 }
-
-List<String?>? DisplayExistingNotes()
 //Display note names and save list of all note names
+List<String?>? DisplayExistingNotes()
 {
     //If notes folder does not exist, create it
     if (!Directory.Exists(notes_path))
