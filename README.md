@@ -8,6 +8,7 @@ You will have 4 options
 > 4. Exit
 
 Input the number of the selection you want.
+
 In the "Create a Note" section, you will be asked to type in a unique name for the note.
 After choosing a unique name, you can write the content of the note.
 
