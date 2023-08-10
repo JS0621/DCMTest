@@ -2,6 +2,7 @@
 //Task: Create a console=based note-taking application using .NET Core
 //Time Start: 8:05 PM
 
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 Console.Write("Note Taking Application:\n\n"); //Intro Message
@@ -32,27 +33,13 @@ while (go)
             break; //Return to main menu
 
         case "2": //User wants to read a note
-            //If notes folder does not exist, create it
-            if (!Directory.Exists(notes_path))
-            {
-                Directory.CreateDirectory(notes_path);
-            }
-
-            Console.WriteLine("All Saved Notes:");// Intro
-
-            List<String?>? existing_names = Directory.GetFiles(notes_path).Select(Path.GetFileName).ToList();//Get all note names
-            
-            //Write all note names
-            for (int i = 0; i < existing_names.Count(); i++)
-            {
-                Console.WriteLine(i + 1 + ". " + existing_names[i]);
-            }
+            List<String?>? existing_names = DisplayExistingNotes(); // Display note names and retrieve list of note names
 
             //loop for selecting which note to read
             while (true)
             {
                 int user_selection = UserInputToInt();
-                
+
                 if (user_selection == -1)//-1 returns to menu
                 {
                     break;
@@ -79,9 +66,50 @@ while (go)
             }
 
             break;
-        case "3":
+        case "3": //User wants to delete a note
+            if (!Directory.Exists(notes_path)) //If folder does not exist, no notes exist
+            {
+                Console.WriteLine("No saved notes. Please create a note to delete one.");
+                break;
+            }
+            while (true)
+            {
+                List<String?>? existing_notes = DisplayExistingNotes();// Display note names and create list of note names
 
+
+                Console.Write("Input exact name of note to delete or -1 to exit: ");
+                String? note_to_delete = Console.ReadLine();
+                if (String.IsNullOrEmpty(note_to_delete)) //is the input empty?
+                {
+                    Console.WriteLine("Input a listed name (or -1 to exit): ");
+                }
+                else if (note_to_delete == "-1") //is the input the exit
+                {
+                    break;
+                }
+                else if (existing_notes.Contains(note_to_delete))
+                {
+                    //Try catch as the file may be opened elsewhere
+                    try 
+                    {
+                        File.Delete(notes_path + "\\" + note_to_delete); //Delete the note
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+
+                    Console.WriteLine("Note successfully deleted");
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Input listed name (or -1 to exit): ");
+                }
+            }
             break;
+
         case "4":
             go = false;
             break;
@@ -147,4 +175,26 @@ String GetValidNoteName()
     }
 
     return note_name;
+}
+
+List<String?>? DisplayExistingNotes()
+//Display note names and save list of all note names
+{
+    //If notes folder does not exist, create it
+    if (!Directory.Exists(notes_path))
+    {
+        Directory.CreateDirectory(notes_path);
+    }
+
+    Console.WriteLine("All Saved Notes:");// Intro
+
+    List<String?>? existing_names = Directory.GetFiles(notes_path).Select(Path.GetFileName).ToList();//Get all note names
+
+    //Write all note names
+    for (int i = 0; i < existing_names.Count(); i++)
+    {
+        Console.WriteLine(i + 1 + ". " + existing_names[i]);
+    }
+
+    return existing_names;
 }
