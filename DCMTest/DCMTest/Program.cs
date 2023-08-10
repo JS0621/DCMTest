@@ -9,7 +9,7 @@
 /*
  * When I began, I decided I wanted to have notes save across sessions. Notes note saving accross sessions seems impractical.
  * I fixed this issue using .txt files.
- * Uses relative path from the exe in debug. Filepath can be changed to create the "notes" folder where specified.
+ * Uses relative path from the exe in debug. "notes" folder location is in the same folder with the program.cs. Filepath can be changed to create the "notes" folder where specified.
  * Note application saves notes as .txts in the notes folder.
  * Note application can read and delete.
  */
